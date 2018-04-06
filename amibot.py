@@ -26,6 +26,7 @@ def main():
     AmiBot will repeat everything you type
 
     """
+
     updater = Updater("541907262:AAEOOVHWPnGZPJcHjHEkVtvsJ_asrRdwc14")
     dp = updater.dispatcher
 
