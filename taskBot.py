@@ -1,7 +1,9 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler
 from telegram import ChatAction
-tasks_list = list()
+import time
 
+tasks_list = list()
+NEW = range(1)
 
 """
 
@@ -27,6 +29,14 @@ def save_list(path):
         f.write("%s\n" % item)
 
 
+"""
+def readInput(bot, update):
+    readed = update.message.text
+    print("f readInput" + readed)
+    return update.message.text
+"""
+
+
 def showTasks(bot, update):
     if len(tasks_list) == 0:
         update.message.reply_text("no tasks memorized yet")
@@ -36,13 +46,26 @@ def showTasks(bot, update):
         update.message.reply_text(element)
 
 
+def readReply(bot, update):
+    nope = update.message.text
+    print(nope)
+    while(update.message.text == nope):
+        update.getUpdate()
+        time.sleep(0.5)
+    return update.message.text
+
+
 def newTask(bot, update):
     update.message.reply_text("What?")
-    task_to_be_added = bot.text
-    print(task_to_be_added)
-    tasks_list.append(task_to_be_added)
-    showTasks()
-    update.message.reply_text("added" + task_to_be_added)
+    msg = update.message.text
+
+    #reply = readReply(bot, update)
+    print(msg + " replied text!!")
+    tasks_list.append(msg)
+    showTasks(bot, update)
+    update.message.reply_text("added" + msg)
+
+
 
 
 def removeTask(bot, update):
@@ -56,7 +79,7 @@ def removeTask(bot, update):
 
 
 def removeAllTasks(bot, update):
-        update.message.reply_text("not implemented yet")
+    update.message.reply_text("not implemented yet")
 
 
 def start(bot, update):
@@ -73,6 +96,8 @@ def testPrint():
     tasks_list.sort()
     print(*tasks_list, sep='\n')
 
+def cancel(bot, update):
+    return
 
 def main():
     pathToFile = "/home/ale-dell/PycharmProjects/python-lab2/task_list.txt"
@@ -86,6 +111,10 @@ def main():
     dispatcher.add_handler(CommandHandler("remove_task", removeTask))
     dispatcher.add_handler(CommandHandler("remove_all_tasks", removeAllTasks))
     dispatcher.add_handler(CommandHandler("save_tasks", save_list))
+    dispatcher.add_handler(CommandHandler("cancel", cancel))
+
+
+    #dispatcher.add_handler(MessageHandler(Filters.text, readInput))
 
     load_list(pathToFile)
 
