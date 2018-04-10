@@ -37,26 +37,37 @@ def showTasks(bot, update):
 
 
 def newTask(bot, update):
-    print("What?")
+    update.message.reply_text("What?")
     new_task = input()
     tasks_list.append(new_task)
 
 
 def removeTask(bot, update):
-    print("Write the item to delete")
-    to_be_deleted = input()
+    update.message.reply_text("Write the item to delete")
+
+    to_be_deleted = update.message.text
     try:
         tasks_list.remove(to_be_deleted)
     except ValueError:
-        print("element not found!")
+        update.message.reply_text("element not found!")
 
 
 def removeAllTasks(bot, update):
+    update.message.reply_text("not implemented yet")
 
 
 def start(bot, update):
     # handle start on bot
     update.message.reply_text("connected")
+    update.message.reply_text("list of commands:\n/show_tasks\tshow all saved tasks\n/new_tasks\tadd a new task\n/remove_task\n/remove_all_tasks\tremove all tasks")
+
+
+def testPrint():
+    if len(tasks_list) == 0:
+        print("no tasks memorized yet")
+        return
+    tasks_list.sort()
+    print(*tasks_list, sep='\n')
 
 
 def main():
@@ -66,16 +77,20 @@ def main():
     dp = updater.dispatcher
 
     dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("showTasks", showTasks))
-    dp.add_handler(CommandHandler("newTask", newTask))
-    dp.add_handler(CommandHandler("removeTask", removeTask))
-    dp.add_handler(CommandHandler("removeAllTasks", removeAllTasks))
+    dp.add_handler(CommandHandler("show_tasks", showTasks))
+    dp.add_handler(CommandHandler("new_task", newTask))
+    dp.add_handler(CommandHandler("remove_task", removeTask))
+    dp.add_handler(CommandHandler("remove_all_tasks", removeAllTasks))
+    dp.add_handler(CommandHandler("save_tasks", save_list))
 
     load_list(pathToFile)
-    save_list(pathToFile)
+
+    #testPrint()
 
     updater.start_polling()
     updater.idle()
+
+    # save_list(pathToFile)
 
 
 if __name__ == "__main__":
