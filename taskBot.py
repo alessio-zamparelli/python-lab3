@@ -38,8 +38,11 @@ def showTasks(bot, update):
 
 def newTask(bot, update):
     update.message.reply_text("What?")
-    new_task = input()
-    tasks_list.append(new_task)
+    task_to_be_added = bot.text
+    print(task_to_be_added)
+    tasks_list.append(task_to_be_added)
+    showTasks()
+    update.message.reply_text("added" + task_to_be_added)
 
 
 def removeTask(bot, update):
@@ -53,13 +56,14 @@ def removeTask(bot, update):
 
 
 def removeAllTasks(bot, update):
-    update.message.reply_text("not implemented yet")
+        update.message.reply_text("not implemented yet")
 
 
 def start(bot, update):
     # handle start on bot
     update.message.reply_text("connected")
-    update.message.reply_text("list of commands:\n/show_tasks\tshow all saved tasks\n/new_tasks\tadd a new task\n/remove_task\n/remove_all_tasks\tremove all tasks")
+    update.message.reply_text(
+        "list of commands:\n/show_tasks\tshow all saved tasks\n/new_tasks\tadd a new task\n/remove_task\n/remove_all_tasks\tremove all tasks\nsave_tasks\tsave current list")
 
 
 def testPrint():
@@ -74,18 +78,18 @@ def main():
     pathToFile = "/home/ale-dell/PycharmProjects/python-lab2/task_list.txt"
 
     updater = Updater("541907262:AAEOOVHWPnGZPJcHjHEkVtvsJ_asrRdwc14")
-    dp = updater.dispatcher
+    dispatcher = updater.dispatcher
 
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("show_tasks", showTasks))
-    dp.add_handler(CommandHandler("new_task", newTask))
-    dp.add_handler(CommandHandler("remove_task", removeTask))
-    dp.add_handler(CommandHandler("remove_all_tasks", removeAllTasks))
-    dp.add_handler(CommandHandler("save_tasks", save_list))
+    dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(CommandHandler("show_tasks", showTasks))
+    dispatcher.add_handler(CommandHandler("new_task", newTask))
+    dispatcher.add_handler(CommandHandler("remove_task", removeTask))
+    dispatcher.add_handler(CommandHandler("remove_all_tasks", removeAllTasks))
+    dispatcher.add_handler(CommandHandler("save_tasks", save_list))
 
     load_list(pathToFile)
 
-    #testPrint()
+    # testPrint()
 
     updater.start_polling()
     updater.idle()
