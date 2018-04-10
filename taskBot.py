@@ -1,9 +1,10 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler
 from telegram import ChatAction
 import time
-
+from sys import exit
+from os import _exit
 tasks_list = list()
-NEW = range(1)
+pathToFile = "/home/ale-dell/Python project/python-lab2/task_list.txt"
 
 """
 
@@ -23,10 +24,11 @@ def load_list(path):
             tasks_list.append(line.strip())
 
 
-def save_list(path):
-    f = open(path, 'w')
+def save_list(bot, update):
+    f = open(pathToFile, 'w')
     for item in tasks_list:
         f.write("%s\n" % item)
+    update.message.reply_text("list saved")
 
 
 """
@@ -46,40 +48,33 @@ def showTasks(bot, update):
         update.message.reply_text(element)
 
 
-def readReply(bot, update):
-    nope = update.message.text
-    print(nope)
-    while(update.message.text == nope):
-        update.getUpdate()
-        time.sleep(0.5)
-    return update.message.text
 
 
-def newTask(bot, update):
-    update.message.reply_text("What?")
-    msg = update.message.text
-
-    #reply = readReply(bot, update)
-    print(msg + " replied text!!")
-    tasks_list.append(msg)
-    showTasks(bot, update)
-    update.message.reply_text("added" + msg)
+def newTask(bot, update, args):
+    msg = ' '.join(args)
+    #print(msg + " replied text!!")
+    if(msg != ""):
+        tasks_list.append(msg)
+        #showTasks(bot, update)
+        update.message.reply_text("added " + msg + " to the tasks list")
+    else:
+        update.message.reply_text("error")
 
 
 
 
-def removeTask(bot, update):
-    update.message.reply_text("Write the item to delete")
-
-    to_be_deleted = update.message.text
+def removeTask(bot, update, args):
+    msg = ' '.join(args)
     try:
-        tasks_list.remove(to_be_deleted)
+        tasks_list.remove(msg)
+        update.message.reply_text(msg + " removed")
     except ValueError:
         update.message.reply_text("element not found!")
 
 
 def removeAllTasks(bot, update):
-    update.message.reply_text("not implemented yet")
+    tasks_list.clear()
+    update.message.reply_text("Deleted ALL tasks")
 
 
 def start(bot, update):
@@ -97,18 +92,20 @@ def testPrint():
     print(*tasks_list, sep='\n')
 
 def cancel(bot, update):
-    return
+    update.message.reply_text("adieu!")
+    save_list(bot, update)
+    _exit(0)
+
 
 def main():
-    pathToFile = "/home/ale-dell/PycharmProjects/python-lab2/task_list.txt"
 
     updater = Updater("541907262:AAEOOVHWPnGZPJcHjHEkVtvsJ_asrRdwc14")
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("show_tasks", showTasks))
-    dispatcher.add_handler(CommandHandler("new_task", newTask))
-    dispatcher.add_handler(CommandHandler("remove_task", removeTask))
+    dispatcher.add_handler(CommandHandler("new_task", newTask, pass_args="true"))
+    dispatcher.add_handler(CommandHandler("remove_task", removeTask, pass_args="true"))
     dispatcher.add_handler(CommandHandler("remove_all_tasks", removeAllTasks))
     dispatcher.add_handler(CommandHandler("save_tasks", save_list))
     dispatcher.add_handler(CommandHandler("cancel", cancel))
