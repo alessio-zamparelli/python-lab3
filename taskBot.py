@@ -24,11 +24,15 @@ def load_list(path):
             tasks_list.append(line.strip())
 
 
+    f.close()
+
+
 def save_list(bot, update):
     f = open(pathToFile, 'w')
     for item in tasks_list:
         f.write("%s\n" % item)
     update.message.reply_text("list saved")
+    f.close()
 
 
 """
@@ -46,6 +50,7 @@ def showTasks(bot, update):
     tasks_list.sort()
     for element in tasks_list:
         update.message.reply_text(element)
+
 
 
 
@@ -80,8 +85,16 @@ def removeAllTasks(bot, update):
 def start(bot, update):
     # handle start on bot
     update.message.reply_text("connected")
-    update.message.reply_text(
-        "list of commands:\n/show_tasks\tshow all saved tasks\n/new_tasks\tadd a new task\n/remove_task\n/remove_all_tasks\tremove all tasks\nsave_tasks\tsave current list")
+    update.message.reply_text("""
+    List of commands:
+    /start - Start the bot 
+    /show_tasks - Show stored tasks
+    /new_task - Add new task
+    /remove_task - Remove a single task
+    /remove_all_tasks - Remove ALL tasks contening the sent phrase
+    /save_tasks - Store the current list
+    /quit - Exit the bot and save
+    """)
 
 
 def testPrint():
@@ -91,7 +104,7 @@ def testPrint():
     tasks_list.sort()
     print(*tasks_list, sep='\n')
 
-def cancel(bot, update):
+def closeBot(bot, update):
     update.message.reply_text("adieu!")
     save_list(bot, update)
     _exit(0)
@@ -108,7 +121,7 @@ def main():
     dispatcher.add_handler(CommandHandler("remove_task", removeTask, pass_args="true"))
     dispatcher.add_handler(CommandHandler("remove_all_tasks", removeAllTasks))
     dispatcher.add_handler(CommandHandler("save_tasks", save_list))
-    dispatcher.add_handler(CommandHandler("cancel", cancel))
+    dispatcher.add_handler(CommandHandler("quit", closeBot))
 
 
     #dispatcher.add_handler(MessageHandler(Filters.text, readInput))
