@@ -26,8 +26,11 @@ def main():
     AmiBot will repeat everything you type
 
     """
-
-    updater = Updater("541907262:AAEOOVHWPnGZPJcHjHEkVtvsJ_asrRdwc14")
+    
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    token = config['telegram']['token']
+    updater = Updater(token
     dp = updater.dispatcher
 
     dp.add_handler(CommandHandler("start", start))
